@@ -1,0 +1,377 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>hello!</title>
+        <script src="phaser.min.js"></script>
+    </head>
+    <body>
+
+		<script type="text/javascript">
+
+		var game = new Phaser.Game(320, 530, Phaser.CANVAS, 'example', { preload: preload, create: create, update: update, render: render });
+
+		var board = [
+					  ['0','0','0','0','0'],
+					  ['0','0','0','0','0'],
+					  ['0','0','0','0','0'],
+					  ['0','0','0','0','0'],
+					  ['0','0','0','0','0']];
+		
+		//образец карты var card {up: 0, right: 0, down: 0, left: 0, x: 0, y: 0, who: 0, picture: 0}
+		
+		var cards = [];
+		for(var i = 0; i <16; i ++){
+			var RandomUp = game.rnd.integerInRange(0,9);
+			var RandomRight = game.rnd.integerInRange(0,9);
+			var RandomDown = game.rnd.integerInRange(0,9);
+			var RandomLeft = game.rnd.integerInRange(0,9);
+			if(i < 8){
+				if(i < 4) cards[i] = {up: RandomUp, right: RandomRight, down: RandomDown, left: RandomLeft, x: 26 + 70*i, y: 361, who: 1, select: 0, picture: 0}
+				else cards[i] = {up: RandomUp, right: RandomRight, down: RandomDown, left: RandomLeft, x: 27 + 70*(i-4), y: 430, who: 1, select: 0, picture: 0}
+				if((cards[i].up + cards[i].right + cards[i].down +cards[i].left) < 12){ cards[i].picture = 1; }
+				else if ((cards[i].up + cards[i].right + cards[i].down +cards[i].left) >= 12 && ((cards[i].up + cards[i].right + cards[i].down +cards[i].left) < 24)) { cards[i].picture = 2; }
+				else { cards[i].picture = 3; }
+			}
+			else{
+				cards[i] = {up: RandomUp, right: RandomRight, down: RandomDown, left: RandomLeft, x: -100, y: -100, who: 2, select: -1, picture: 0}
+				if((cards[i].up + cards[i].right + cards[i].down +cards[i].left) < 12){ cards[i].picture = 4; }
+				else if ((cards[i].up + cards[i].right + cards[i].down +cards[i].left) >= 12 && ((cards[i].up + cards[i].right + cards[i].down +cards[i].left) < 24)) { cards[i].picture = 5; }
+				else { cards[i].picture = 6; }
+			}
+		}
+		
+		var CurrentHod = 8;
+		var boolSelect = -1;
+		
+		var TextShet;
+		var goalFirst;
+		var goalSecond;
+		
+		function preload() {
+			game.load.image('fon', 'fon.jpg');
+			game.load.image('box', 'box.jpg');
+			game.load.image('drug1', 'drug1.png'); //1
+			game.load.image('drug2', 'drug2.png'); //2
+			game.load.image('drug3', 'drug3.png'); //3
+			game.load.image('vrag1', 'vrag1.png'); //4
+			game.load.image('vrag2', 'vrag2.png'); //5
+			game.load.image('vrag3', 'vrag3.png'); //6
+		}
+
+		
+		function create() {
+			game.physics.startSystem(Phaser.Physics.ARCADE);
+		
+			game.add.sprite(0, 0, 'fon');
+			game.input.mouse.capture = true;
+			
+			var localwhile = 0;
+			while (localwhile < 9){
+				var mestoX = game.rnd.integerInRange(0,4);
+				var mestoY = game.rnd.integerInRange(0,4);
+				board[mestoX][mestoY] = -1;
+				localwhile++;
+			}
+			printallcards();
+		}
+		
+		function update() {
+			//printallcards(); // отрисовка
+			//наш ход
+			if(game.input.activePointer.isDown){
+				//выбор карты
+				if ( boolSelect == -1){
+					if(26 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 86 && 361 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 421 &&
+						cards[0].x == 26 && cards[0].y == 361){
+						boolSelect = 0;
+						cards[boolSelect].select = 1;
+					}
+					else if(96 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 156 && 361 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 421 &&
+						cards[1].x == 96 && cards[1].y == 361){
+						boolSelect = 1;
+						cards[boolSelect].select = 1;
+					}
+					else if(166 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 226 && 361 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 421 &&
+						cards[2].x == 166 && cards[2].y == 361){
+						boolSelect = 2;
+						cards[boolSelect].select = 1;
+					}
+					else if(236 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 296 && 361 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 421 &&
+						cards[3].x == 236 && cards[3].y == 361){
+						boolSelect = 3;
+						cards[boolSelect].select = 1;
+					}
+					else if(27 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 87 && 430 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 490 &&
+						cards[4].x == 27 && cards[4].y == 430){
+						boolSelect = 4;
+						cards[boolSelect].select = 1;
+					}
+					else if(97 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 157 && 430 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 490 &&
+						cards[5].x == 97 && cards[5].y == 430){
+						boolSelect = 5;
+						cards[boolSelect].select = 1;
+					}
+					else if(167 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 227 && 430 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 490 &&
+						cards[6].x == 167 && cards[6].y == 430){
+						boolSelect = 6;
+						cards[boolSelect].select = 1;
+					}
+					else if(237 <= game.input.activePointer.position.x && game.input.activePointer.position.x <= 297 && 430 <= game.input.activePointer.position.y && game.input.activePointer.position.y <= 490 &&
+						cards[7].x == 237 && cards[7].y == 430){
+						boolSelect = 7;
+						cards[boolSelect].select = 1;
+					}
+					printallcards();
+				}
+				else{
+					//наш ход
+					cards[boolSelect].select = 0;
+					if(10 < game.input.activePointer.position.x && game.input.activePointer.position.x < 310 && 10 < game.input.activePointer.position.y && game.input.activePointer.position.y < 310){
+						var currentX = Math.floor((game.input.activePointer.position.x-10)/60);
+						var currentY = Math.floor((game.input.activePointer.position.y-10)/60);
+						if(board[currentX][currentY] == 0){
+							board[currentX][currentY] = 1;
+							cards[boolSelect].x = currentX*60+11;
+							cards[boolSelect].y = currentY*60+11;
+							
+							//проверка захвата
+							if(currentX > 0){
+								if(board[currentX-1][currentY] == 2){
+									//сначала ищем эту карту, а потом проверяем бой
+									for(var i = 0; i < 16; i ++){
+										if(cards[i].x == currentX*60-49 && cards[i].y == currentY*60+11) {
+											if(cards[i].right < cards[boolSelect].left){
+												board[currentX-1][currentY] = 1;
+												cards[i].who = 1;
+											}
+										}
+									}
+								}
+							}
+							if(currentX < 4){
+								if(board[currentX+1][currentY] == 2){
+									//сначала ищем эту карту, а потом проверяем бой
+									for(var i = 0; i <16; i ++){
+										if(cards[i].x == currentX*60+71 && cards[i].y == currentY*60+11) {
+											if(cards[i].left < cards[boolSelect].right){
+												board[currentX+1][currentY] = 1;
+												cards[i].who = 1;
+											}
+										}
+									}
+								}
+							}
+							if(currentY > 0){
+								if(board[currentX][currentY-1] == 2){
+									//сначала ищем эту карту, а потом проверяем бой
+									for(var i = 0; i <16; i ++){
+										if(cards[i].x == currentX*60+11 && cards[i].y == currentY*60-49) {
+											if(cards[i].down < cards[boolSelect].up){
+												board[currentX][currentY-1] = 1;
+												cards[i].who = 1;
+											}
+										}
+									}
+								}
+							}
+							if(currentY < 4){
+								if(board[currentX][currentY+1] == 2){
+									//сначала ищем эту карту, а потом проверяем бой
+									for(var i = 0; i <16; i ++){
+										if(cards[i].x == currentX*60+11 && cards[i].y == currentY*60+71) {
+											if(cards[i].up < cards[boolSelect].down){
+												board[currentX][currentY+1] = 1;
+												cards[i].who = 1;
+											}
+										}
+									}
+								}
+							}
+							
+							//ход соперника
+							var telowhile = true;
+							while(telowhile){
+								var mestoX;
+								var mestoY;
+								//проверка на возможный захват карты
+								var KompZahvat = false;
+								
+								for(var i = 0; i < 5; i++){
+									for(var j = 0; j < 5; j++){
+										if(board[i][j] == 1){ 
+											if(KompZahvat == false){
+												//сначала ищем эту карту, а потом проверяем бой
+												var k = -1;
+												var t;
+												for(t = 0; t < 16; t++){
+													if(cards[t].x == i*60+11 && cards[t].y == j*60+11) {
+														k = t;
+													}
+												}
+												if(i > 0){
+													if(cards[CurrentHod].right > cards[k].left && board[i-1][j] == 0 ){
+														mestoX = i-1;
+														mestoY = j;
+														KompZahvat = true;
+													}
+												}
+												if(i < 4){
+													if(cards[CurrentHod].left > cards[k].right && board[i+1][j] == 0 ){
+														mestoX = i+1;
+														mestoY = j;
+														KompZahvat = true;
+													}
+												}
+												if(j > 0){
+													if(cards[CurrentHod].down > cards[k].up && board[i][j-1] == 0 ){
+														mestoX = i;
+														mestoY = j-1;
+														KompZahvat = true;
+													}
+												}
+												if(j < 4){
+													if(cards[CurrentHod].up > cards[k].down && board[i][j+1] == 0 ){
+														mestoX = i;
+														mestoY = j+1;
+														KompZahvat = true;
+													}
+												}
+											}
+										}
+									}
+								}
+								
+								//KompZahvat = true;
+								//если не захватили, значит просто рандом.
+								if(KompZahvat == false){
+									mestoX = game.rnd.integerInRange(0,4);
+									mestoY = game.rnd.integerInRange(0,4);
+								}
+								
+								if(board[mestoX][mestoY] == 0){
+									board[mestoX][mestoY] = 2;
+									cards[CurrentHod].x = mestoX*60+11;
+									cards[CurrentHod].y = mestoY*60+11;
+									
+									//проверка захвата
+									if(mestoX > 0){
+										if(board[mestoX-1][mestoY] == 1){
+											//сначала ищем эту карту, а потом проверяем бой
+											for(var i = 0; i <16; i ++){
+												if(cards[i].x == mestoX*60-49 && cards[i].y == mestoY*60+11) {
+													if(cards[i].right < cards[CurrentHod].left){
+														board[mestoX-1][mestoY] = 2;
+														cards[i].who = 2;
+													}
+												}
+											}
+										}
+									}
+									if(mestoX < 4){
+										if(board[mestoX+1][mestoY] == 1){
+											//сначала ищем эту карту, а потом проверяем бой
+											for(var i = 0; i <16; i ++){
+												if(cards[i].x == mestoX*60+71 && cards[i].y == mestoY*60+11) {
+													if(cards[i].left < cards[CurrentHod].right){
+														board[mestoX+1][mestoY] = 2;
+														cards[i].who = 2;
+													}
+												}
+											}
+										}
+									}
+									if(mestoY > 0){
+										if(board[mestoX][mestoY-1] == 1){
+											//сначала ищем эту карту, а потом проверяем бой
+											for(var i = 0; i <16; i ++){
+												if(cards[i].x == mestoX*60+11 && cards[i].y == mestoY*60-49) {
+													if(cards[i].down < cards[CurrentHod].up){
+														board[mestoX][mestoY-1] = 2;
+														cards[i].who = 2;
+													}
+												}
+											}
+										}
+									}
+									if(mestoY < 4){
+										if(board[mestoX][mestoY+1] == 1){
+											//сначала ищем эту карту, а потом проверяем бой
+											for(var i = 0; i <16; i ++){
+												if(cards[i].x == mestoX*60+11 && cards[i].y == mestoY*60+71) {
+													if(cards[i].up < cards[CurrentHod].down){
+														board[mestoX][mestoY+1] = 2;
+														cards[i].who = 2;
+													}
+												}
+											}
+										}
+									}
+									
+									CurrentHod++;
+									telowhile = false;
+									boolSelect = -1;
+									printallcards(); // отрисовка
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		function render() {
+			
+		}
+
+		function printallcards(){
+			game.add.sprite(0, 0, 'fon');
+			
+			goalFirst = 0;
+		    goalSecond = 0;
+			for(var i = 0; i < 5; i++){
+				for(var j = 0; j < 5; j++){
+					if(board[i][j] == -1){ 
+						var onebox = game.add.sprite(11+ 60* (i), 11+ 60*(j), 'box');
+						onebox.tint = 0x0000ff;
+					}
+					if(board[i][j] == 1){ 
+						goalFirst++;
+					}
+					if(board[i][j] == 2){ 
+						goalSecond++;
+					}
+				}
+			}
+			
+			for(var i = 0; i < 16; i ++){
+				var OneCard = game.add.sprite(cards[i].x, cards[i].y, 'box');
+				if(cards[i].select == 1) OneCard.tint = 0x558933;
+				else if(cards[i].who == 1) OneCard.tint = 0x00ffff;
+				else OneCard.tint = 0xff0000;
+				if(cards[i].picture == 1) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'drug1');
+				else if (cards[i].picture == 2) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'drug2');
+				else if (cards[i].picture == 3) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'drug3');
+				else if (cards[i].picture == 4) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'vrag1');
+				else if (cards[i].picture == 5) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'vrag2');
+				else if (cards[i].picture == 6) game.add.sprite(cards[i].x + 10, cards[i].y + 10, 'vrag3');
+				var TextLalala;
+				if(cards[i].who == 1){ TextLalala = game.add.text(cards[i].x,cards[i].y,' ', { font: '13px Arial', fill: '#000' });}
+				else{ TextLalala = game.add.text(cards[i].x,cards[i].y,' ', { font: '13px Arial', fill: '#fff' });}
+				TextLalala.visible = true;
+				TextLalala.text = " 						" + cards[i].up + " \n	";
+				TextLalala.text += cards[i].left + " 							  " + cards[i].right;
+				TextLalala.text += "\n 						" + cards[i].down + " ";
+			}
+			
+			TextShet = game.add.text(160,335,' ', { font: '34px Arial', fill: '#fff' });
+			TextShet.anchor.setTo(0.5, 0.5);
+			
+			
+			
+			TextShet.text = goalFirst + " - " + goalSecond;
+		}
+		</script>
+
+    </body>
+</html>
